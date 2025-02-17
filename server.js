@@ -29,3 +29,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
+// Exportamos la app para los tests
+module.exports = app;
