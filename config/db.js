@@ -6,6 +6,9 @@ require("dotenv").config();
 // Crea un pool de conexiones usando la variable DATABASE_URL definida en .env
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 module.exports = pool;
