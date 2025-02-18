@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
   }
 };
 
-afterAll(async () => {
-  // Cerrar el pool de conexiones para que Jest pueda finalizar correctamente
-  await pool.end();
-});
+//afterAll(async () => {
+//  // Cerrar el pool de conexiones para que Jest pueda finalizar correctamente
+//  await pool.end();
+//});
