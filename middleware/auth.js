@@ -1,25 +1,25 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
-// Middleware para proteger rutas que requieren autenticación
 const verifyToken = (req, res, next) => {
-  // Se espera que el token venga en el header "Authorization" en formato "Bearer <token>"
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    return res.status(401).json({ error: "Acceso denegado" });
+    return res.status(401).json({ error: "Acceso denegado. No se proporcionó token." });
   }
-  // Extraer el token
+
   const token = authHeader.split(" ")[1];
+  console.log("Token recibido:", token); // Debugging
+
   if (!token) {
-    return res.status(401).json({ error: "Token no proporcionado" });
+    return res.status(401).json({ error: "Token no proporcionado." });
   }
+
   try {
-    // Verificar el token y obtener la información del usuario
     const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified; // Agregar la información del token a req.user
+    console.log("Token decodificado:", verified); // Debugging
+    req.user = verified;
     next();
   } catch (err) {
-    res.status(400).json({ error: "Token no es válido" });
+    return res.status(400).json({ error: "Token no válido." });
   }
 };
 
