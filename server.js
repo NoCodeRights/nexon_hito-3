@@ -13,7 +13,7 @@ const app = express();
 
 // Middleware CORS mejorado
 app.use(cors({
-  origin: ["http://localhost:5173", "https://nexon-hito-3.onrender.com"],
+  origin: ["http://localhost:5173", "https://nexon-hito-2.vercel.app", "https://nexon-hito-3.onrender.com"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true // Permite envío de cookies/autenticación
