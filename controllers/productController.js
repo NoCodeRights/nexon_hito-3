@@ -13,8 +13,10 @@ exports.getAllProducts = async (req, res) => {
 
 // Crear un nuevo producto
 exports.createProduct = async (req, res) => {
+  console.log("Usuario autenticado:", req.user); // Debugging
+
   const { title, description, price, condition, stock } = req.body;
-  const user_id = req.user?.id; 
+  const user_id = req.user?.id; // Evita error si req.user es undefined
 
   if (!user_id) {
     return res.status(401).json({ error: "Usuario no autenticado" });
@@ -34,26 +36,55 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// Reducir stock
+// Eliminar un producto
+exports.deleteProduct = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await pool.query("DELETE FROM products WHERE id = $1", [id]);
+    res.status(200).json({ message: "Producto eliminado correctamente" });
+  } catch (err) {
+    console.error("Error eliminando producto:", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+};
+
+// Reducir stock de un producto
 exports.reduceStock = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await pool.query("UPDATE products SET stock = stock - 1 WHERE id = $1 AND stock > 0", [id]);
-    res.status(200).json({ message: "Stock reducido exitosamente" });
+    const result = await pool.query(
+      "UPDATE products SET stock = GREATEST(stock - 1, 0) WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("Error reduciendo stock:", err);
     res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
-// Aumentar stock
+// Aumentar stock de un producto
 exports.increaseStock = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await pool.query("UPDATE products SET stock = stock + 1 WHERE id = $1", [id]);
-    res.status(200).json({ message: "Stock aumentado exitosamente" });
+    const result = await pool.query(
+      "UPDATE products SET stock = stock + 1 WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("Error aumentando stock:", err);
     res.status(500).json({ error: "Error en el servidor" });
