@@ -31,6 +31,14 @@ app.use("/api/users", users);
 app.use("/api/cart", cart);
 app.use("/api/favorites", favorites);
 
+// Mostrar las rutas que están activas en el backend
+app._router.stack.forEach((r) => {
+  if (r.route && r.route.path) {
+    console.log(`Ruta activa: ${r.route.path}`);
+  }
+});
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
