@@ -15,10 +15,12 @@ const app = express();
 
 // Middleware CORS corregido
 app.use(cors({
-  origin: "*", // Permite todas las conexiones (para pruebas)
+  origin: ["https://nexon-hito-2.vercel.app"], // Solo permitimos el frontend en Vercel
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true // Permite envío de cookies/autenticación
 }));
+
 
 // Middleware para servir archivos estáticos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
