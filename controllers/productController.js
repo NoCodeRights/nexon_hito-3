@@ -13,10 +13,8 @@ exports.getAllProducts = async (req, res) => {
 
 // Crear un nuevo producto
 exports.createProduct = async (req, res) => {
-  console.log("Usuario autenticado:", req.user); // Debugging
-
   const { title, description, price, condition, stock } = req.body;
-  const user_id = req.user?.id; // Evita error si req.user es undefined
+  const user_id = req.user?.id; 
 
   if (!user_id) {
     return res.status(401).json({ error: "Usuario no autenticado" });
@@ -36,3 +34,28 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+// Reducir stock
+exports.reduceStock = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await pool.query("UPDATE products SET stock = stock - 1 WHERE id = $1 AND stock > 0", [id]);
+    res.status(200).json({ message: "Stock reducido exitosamente" });
+  } catch (err) {
+    console.error("Error reduciendo stock:", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+};
+
+// Aumentar stock
+exports.increaseStock = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await pool.query("UPDATE products SET stock = stock + 1 WHERE id = $1", [id]);
+    res.status(200).json({ message: "Stock aumentado exitosamente" });
+  } catch (err) {
+    console.error("Error aumentando stock:", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+};
