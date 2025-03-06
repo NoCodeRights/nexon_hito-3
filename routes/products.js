@@ -12,9 +12,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Agregamos una prueba para verificar que esta ruta existe
-router.get("/", (req, res) => res.json({ message: "Ruta de productos activa" }));
-
 router.get("/", productController.getAllProducts);
 router.post("/", verifyToken, upload.single("image"), productController.createProduct);
 
