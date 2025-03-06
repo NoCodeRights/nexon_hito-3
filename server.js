@@ -3,8 +3,6 @@ const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const path = require("path");
-
-// Importar las rutas
 const products = require("./routes/products");
 const users = require("./routes/users");
 const cart = require("./routes/cart");
@@ -13,14 +11,13 @@ const favorites = require("./routes/favorites");
 dotenv.config();
 const app = express();
 
-// Middleware CORS corregido
+// Middleware CORS mejorado
 app.use(cors({
-  origin: ["https://nexon-hito-2.vercel.app"], // Solo permitimos el frontend en Vercel
+  origin: ["http://localhost:5173", "https://nexon-hito-2.vercel.app", "https://nexon-hito-3.onrender.com"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true // Permite envío de cookies/autenticación
+  credentials: true
 }));
-
 
 // Middleware para servir archivos estáticos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -28,29 +25,26 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json()); // Para recibir JSON en el backend
 app.use(morgan("dev")); // Para ver logs en consola
 
-// Verificar que las rutas están cargadas correctamente
-console.log("Cargando rutas...");
-console.log("Usuarios:", users.stack.map(r => r.route.path));
-console.log("Productos:", products.stack.map(r => r.route.path));
-console.log("Carrito:", cart.stack.map(r => r.route.path));
-console.log("Favoritos:", favorites.stack.map(r => r.route.path));
-
-// Rutas con prefijo "/api"
+// Rutas
 app.use("/api/products", products);
 app.use("/api/users", users);
 app.use("/api/cart", cart);
 app.use("/api/favorites", favorites);
 
-// Middleware de error (para ver qué está fallando)
-app.use((err, req, res, next) => {
-  console.error("Error en el servidor:", err);
-  res.status(500).json({ error: "Error interno del servidor" });
+// Ruta de prueba para saber si el servidor está activo
+app.get("/", (req, res) => {
+  res.send("🟢 API funcionando correctamente. Usa /api para acceder a las rutas.");
 });
 
-// Iniciar el servidor en el puerto correcto
+// Middleware para manejar rutas no encontradas
+app.use((req, res) => {
+  res.status(404).json({ error: "Ruta no encontrada" });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
+// Exportamos la app para los tests
 module.exports = app;
